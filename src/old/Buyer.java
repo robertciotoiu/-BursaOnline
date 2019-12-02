@@ -1,17 +1,17 @@
-
-import messaging.TextListenerImpl;
+package old;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import javax.jms.*;
+import javax.naming.NamingException;
 
 public class Buyer extends AbstractProducerConsumer{
-	public void init()
+	public void init() throws NamingException
 	{
 		
-		Connection conn = null;
-		Session session = null;
+		TopicConnection conn = null;
+		TopicSession session = null;
 		Destination dest = null;
 		TextMessage m = null;
 		MessageConsumer mConsumer = null;
@@ -24,7 +24,7 @@ public class Buyer extends AbstractProducerConsumer{
 		
 		if(conn!=null)
 		{
-			session = createSession(conn);
+			session = createTopicSession(conn);
 		}
 		
 		if(session!=null)

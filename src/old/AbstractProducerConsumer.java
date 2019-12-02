@@ -1,3 +1,4 @@
+package old;
 import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -6,8 +7,13 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
+import javax.jms.TopicSession;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.TopicConnectionFactory;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 public class AbstractProducerConsumer {
 	
@@ -36,12 +42,15 @@ public class AbstractProducerConsumer {
 		return dest;
 	}
 	
-	protected Connection createConnection()
+	protected TopicConnection createConnection() throws NamingException
 
 	{
 		try {
-			Connection connection = connectionFactory.createConnection();
-			return connection;
+			 InitialContext ctx=new InitialContext();  
+	            TopicConnectionFactory f=(TopicConnectionFactory)ctx.lookup("myTopicConnectionFactory");  
+	            TopicConnection conn=f.createTopicConnection();  
+	            conn.start();  
+			return conn;
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,11 +58,11 @@ public class AbstractProducerConsumer {
 		return null;	
 	}
 
-	protected Session createSession(Connection conn)
+	protected TopicSession createTopicSession(TopicConnection conn)
 	{
 		try {
-			Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			return session;
+			TopicSession TopicSession = conn.createTopicSession(false,Session.AUTO_ACKNOWLEDGE);
+			return TopicSession;
 		} catch (JMSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,11 +70,11 @@ public class AbstractProducerConsumer {
 		return null;
 	}
 
-	protected TextMessage createMessage(Session session, Destination dest)
+	protected TextMessage createMessage(TopicSession TopicSession, Destination dest)
 	{
 		try {
 		
-		TextMessage message = session.createTextMessage();
+		TextMessage message = TopicSession.createTextMessage();
 		
 		return message;
 		}
