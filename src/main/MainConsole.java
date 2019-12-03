@@ -41,8 +41,13 @@ public class MainConsole {
 		bu3.start();
 		
 		Bidder bidder = new Bidder();
+		Bidder bidder1= new Bidder();
+		
 		Thread bi1 = new Thread(bidder);
 		bi1.start();
+		
+		Thread bi2 = new Thread(bidder1);
+		bi2.start();
 		
 		try {
 			Thread.currentThread().sleep(10000);
@@ -50,17 +55,20 @@ public class MainConsole {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		buyer.setInterests("Apple", 0.0, 250.0, 30000);
+		buyer.setInterests("Tesla", 0.0, 250.0, 30000);
 		buyer.setInterests("Microsoft", 0.0, 250.0, 30000);
 
+		buyer2.setInterests("Tesla", 0.0, 250.0, 30000);
 		buyer2.setInterests("Apple", 0.0, 250.0, 30000);
-		buyer2.setInterests("Microsoft", 0.0, 250.0, 30000);
 
-		buyer3.setInterests("Apple", 0.0, 250.0, 30000);
+		buyer3.setInterests("BMW", 0.0, 450.0, 30000);
 		buyer3.setInterests("Microsoft", 0.0, 250.0, 30000);
 
 		bidder.createEventOffer("Apple", 200.0, 30000);// 30000 millis = 30 seconds
-		bidder.createEventOffer("Apple", 251.0, 30000);// 30000 millis = 30 seconds
+		bidder.createEventOffer("Apple", 249.0, 30000);// 30000 millis = 30 seconds
 		bidder.createEventOffer("Microsoft", 197.0, 30000);// 30000 millis = 30 seconds
+		
+		bidder1.createEventOffer("Tesla", 100.5, 30000);
+		bidder1.createEventOffer("BMW", 350.99, 30000);
 	}
 }

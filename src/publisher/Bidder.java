@@ -27,7 +27,7 @@ public class Bidder implements Runnable {
 					msg.setJMSType("Request");
 					
 					long messageID = System.nanoTime();
-					msg.setJMSMessageID(String.valueOf(messageID));
+					msg.setStringProperty("MsgID",String.valueOf(messageID));
 					MessageIDs.add(String.valueOf(messageID));
 
 					

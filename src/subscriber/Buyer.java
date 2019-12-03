@@ -13,6 +13,8 @@ public class Buyer implements Runnable{
 	CreateTopicConnection topicConnection = null;
 	CreateTopicConnection topicConnectionReceiver = null;
 	TopicSubscriber receiver = null;
+	CreateTopicConnection publisherTopicConnection = null;
+	TopicPublisher publisher = null;
 
 	
 	public void setInterests(String company, double minPrice, double maxPrice, long maxAllowedOffertAge)
@@ -29,7 +31,10 @@ public class Buyer implements Runnable{
 	public void receiveEvent()
 	{
 		try { 
-            MyListener listener=new MyListener(interests); 
+			publisherTopicConnection = new CreateTopicConnection();
+            publisher = publisherTopicConnection.getTopicSession().createPublisher(publisherTopicConnection.getTopic());
+            MyListener listener=new MyListener(interests,publisher,publisherTopicConnection.getTopicSession());
+            
               
             //6) register the listener object with subscriber  
             receiver.setMessageListener(listener);
