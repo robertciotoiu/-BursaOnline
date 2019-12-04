@@ -4,11 +4,13 @@ package publisher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
 
 import javax.jms.*;
 
 import messaging.BidderListener;
 import resource.CreateTopicConnection;
+import resource.MyTimerTask;
 
 public class Bidder implements Runnable {
 	private CreateTopicConnection topicConnection = null;
@@ -24,6 +26,8 @@ public class Bidder implements Runnable {
 		try {
 					TextMessage msg = topicConnection.getTopicSession().createTextMessage();
 					
+					
+				    
 					msg.setStringProperty("CompanyName", companyName);
 					msg.setDoubleProperty("StartPrice", startPrice);
 					msg.setJMSExpiration(System.currentTimeMillis() + expirationTime);
@@ -36,6 +40,11 @@ public class Bidder implements Runnable {
 					
 					// 7) send message
 					publisher.publish(msg);
+					MyTimerTask myTimerTask = new MyTimerTask(this, messageID);
+					Timer timer = new Timer("Timer");
+				     
+				    long delay = 1000000L;
+				    timer.schedule(myTimerTask, delay);
 				} catch (Exception e) {
 					System.out.println(e);
 				}
@@ -74,11 +83,24 @@ public class Bidder implements Runnable {
 			offers.get(msgID).add(msg);
 		}
 	}
-	public void chooseOffer(){
-//		for(ArrayList<TextMessage> arr:offers)
-//		{
-//			
-//		}
+	
+	public void chooseOffer(long messageID) throws JMSException{
+		
+		double max=0;
+		double msgOfferPrice;
+		TextMessage soldTo=null;
+		for(TextMessage msg : offers.get(String.valueOf(messageID)))
+		{
+			msgOfferPrice= msg.getDoubleProperty("OfferedPrice");
+			if(msgOfferPrice > max)
+			{	
+				max= msgOfferPrice;
+				soldTo=msg;
+			}
+		}
+		
+		System.out.println("Offer: " + soldTo.getStringProperty("MsgID") + soldTo.getStringProperty("CompanyName") + " was sold to:" + soldTo.getStringProperty("BuyerID"));
+		
 	}
 
 	@Override
