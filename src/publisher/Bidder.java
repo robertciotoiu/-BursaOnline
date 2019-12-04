@@ -3,6 +3,7 @@ package publisher;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.jms.*;
 
@@ -10,10 +11,12 @@ import messaging.BidderListener;
 import resource.CreateTopicConnection;
 
 public class Bidder implements Runnable {
-	CreateTopicConnection topicConnection = null;
-	TopicSubscriber receiver = null;
-	TopicPublisher publisher = null;
-	ArrayList<String> MessageIDs = new ArrayList<String>();
+	private CreateTopicConnection topicConnection = null;
+	private TopicSubscriber receiver = null;
+	private TopicPublisher publisher = null;
+	private ArrayList<String> MessageIDs = new ArrayList<String>();
+	private HashMap<String,ArrayList<TextMessage>> offers = new HashMap<String,ArrayList<TextMessage>>();
+	
 	
 	public void createEventOffer(String companyName, double startPrice, long expirationTime)
 	{
@@ -41,7 +44,7 @@ public class Bidder implements Runnable {
 	public void receiveEventOffer()
 	{
 		try {
-			BidderListener listener=new BidderListener(MessageIDs); 
+			BidderListener listener=new BidderListener(this,MessageIDs); 
 			receiver.setMessageListener(listener);
 			
             //6) register the listener object with subscriber  
@@ -58,6 +61,24 @@ public class Bidder implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public void addOffer(TextMessage msg) throws JMSException {
+		String msgID = msg.getStringProperty("MsgID");
+		if(offers.containsKey(msgID))
+		{
+			offers.get(msgID).add(msg);
+		}
+		else
+		{
+			offers.put(msgID, new ArrayList<TextMessage>());
+			offers.get(msgID).add(msg);
+		}
+	}
+	public void chooseOffer(){
+//		for(ArrayList<TextMessage> arr:offers)
+//		{
+//			
+//		}
 	}
 
 	@Override

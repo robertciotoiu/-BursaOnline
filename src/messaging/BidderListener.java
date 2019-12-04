@@ -10,14 +10,18 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import publisher.Bidder;
+
 public class BidderListener implements MessageListener {
 	
 	ArrayList<String> messageIDs = null;
 	Lock lock = new ReentrantLock();
+	Bidder bidder = null;
 	
-	public BidderListener(ArrayList<String> messageIDs)
+	public BidderListener(Bidder bidder, ArrayList<String> messageIDs)
 	{
 		this.messageIDs = messageIDs;
+		this.bidder = bidder;
 	}
 	
 	public void onMessage(Message m) {
@@ -40,8 +44,9 @@ public class BidderListener implements MessageListener {
 				System.out.println(msg.getDoubleProperty("OfferedPrice")+", "+msg.getDoubleProperty("StartPrice"));
 				if(msg.getDoubleProperty("OfferedPrice")>=msg.getDoubleProperty("StartPrice"))
 				{
-							System.out.println("Share: "+msg.getStringProperty("MsgID")+" ["+msg.getStringProperty("CompanyName")+"] has been sold to: "+msg.getDoubleProperty("BuyerID"));
-							messageIDs.remove(msg.getStringProperty("MsgID"));
+					bidder.addOffer(msg);
+							//System.out.println("Share: "+msg.getStringProperty("MsgID")+" ["+msg.getStringProperty("CompanyName")+"] has been sold to: "+msg.getDoubleProperty("BuyerID"));
+							//messageIDs.remove(msg.getStringProperty("MsgID"));
 				}
 			}
 			}
